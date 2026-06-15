@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taskify // Modern Task Management</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for fallback icons if needed, but we will mostly use inline SVGs for premium rendering -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-background">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <div class="container">
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 11L12 14L22 4" stroke="url(#logo-grad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="url(#logo-grad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="logo-grad" x1="3" y1="3" x2="22" y2="21" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#8b5cf6"/>
+                                <stop offset="1" stop-color="#3b82f6"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1>Taskify</h1>
+            </div>
+            <div class="header-actions">
+                <div class="date-display" id="current-date">Monday, 15 Jun</div>
+                <button class="theme-toggle" id="theme-toggle-btn" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Dashboard Layout -->
+        <main class="app-main">
+            <!-- Left Side: Stats and Input Form -->
+            <section class="sidebar-section">
+                <!-- Progress Widget -->
+                <div class="card stats-card">
+                    <div class="stats-header">
+                        <h2>Your Progress</h2>
+                        <span class="progress-percentage" id="progress-text">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="stats-counters">
+                        <div class="counter-item">
+                            <span class="counter-num" id="tasks-todo-count">0</span>
+                            <span class="counter-label">Pending</span>
+                        </div>
+                        <div class="counter-divider"></div>
+                        <div class="counter-item">
+                            <span class="counter-num" id="tasks-completed-count">0</span>
+                            <span class="counter-label">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Creator Card -->
+                <div class="card creator-card">
+                    <h2>Create New Task</h2>
+                    <form id="task-form" autocomplete="off">
+                        <div class="input-group">
+                            <label for="task-input">What needs to be done?</label>
+                            <div class="text-input-wrapper">
+                                <input type="text" id="task-input" placeholder="Type task title here..." required>
+                                <span class="input-focus-line"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="input-group half">
+                                <label for="task-category">Category</label>
+                                <select id="task-category">
+                                    <option value="Work">💼 Work</option>
+                                    <option value="Personal">🏠 Personal</option>
+                                    <option value="Shopping">🛒 Shopping</option>
+                                    <option value="Health">❤️ Health</option>
+                                    <option value="Others">✨ Others</option>
+                                </select>
+                            </div>
+                            <div class="input-group half">
+                                <label for="task-priority">Priority</label>
+                                <select id="task-priority">
+                                    <option value="low">🟢 Low</option>
+                                    <option value="medium" selected>🟡 Medium</option>
+                                    <option value="high">🔴 High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="task-date">Due Date</label>
+                            <input type="date" id="task-date">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="add-task-btn">
+                            <span>Add Task</span>
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Right Side: Task List with Filters and Sorting -->
+            <section class="content-section">
+                <!-- Filters & Search Toolbar -->
+                <div class="toolbar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Search tasks...">
+                        <button id="clear-search-btn" class="clear-search-btn" style="display: none;">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="filter-sort-controls">
+                        <!-- Filters -->
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" data-filter="all">All</button>
+                            <button class="filter-tab" data-filter="active">Active</button>
+                            <button class="filter-tab" data-filter="completed">Completed</button>
+                        </div>
+
+                        <!-- Sorting -->
+                        <div class="sort-wrapper">
+                            <i class="fa-solid fa-sort-amount-down sort-icon"></i>
+                            <select id="sort-select" aria-label="Sort Tasks">
+                                <option value="date-created-desc">Newest First</option>
+                                <option value="date-created-asc">Oldest First</option>
+                                <option value="due-date-asc">Due Date (Earliest)</option>
+                                <option value="priority-desc">Priority (High to Low)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Listing Container -->
+                <div class="tasks-container" id="tasks-container">
+                    <!-- Dynamic tasks will be inserted here -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="empty-state" style="display: none;">
+                    <div class="empty-illustration">
+                        <svg viewBox="0 0 200 200" width="160" height="160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="100" r="80" fill="url(#empty-circle-grad)" fill-opacity="0.05" stroke="url(#empty-circle-grad)" stroke-width="2" stroke-dasharray="8 6"/>
+                            <path d="M70 120H130M70 100H130M70 80H100" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.3" class="doc-lines"/>
+                            <rect x="55" y="45" width="90" height="110" rx="8" stroke="currentColor" stroke-width="4" class="doc-border" stroke-linejoin="round"/>
+                            <circle cx="100" cy="100" r="25" fill="var(--card-bg)" stroke="url(#accent-grad)" stroke-width="4" class="search-glass"/>
+                            <line x1="118" y1="118" x2="140" y2="140" stroke="url(#accent-grad)" stroke-width="5" stroke-linecap="round" class="search-handle"/>
+                            <defs>
+                                <linearGradient id="empty-circle-grad" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="var(--primary)"/>
+                                    <stop offset="1" stop-color="var(--secondary)"/>
+                                </linearGradient>
+                                <linearGradient id="accent-grad" x1="75" y1="75" x2="140" y2="140" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#8b5cf6"/>
+                                    <stop offset="1" stop-color="#ec4899"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <h3>No tasks found</h3>
+                    <p id="empty-state-text">Get started by creating a task or adjusting your search filters.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal-backdrop" id="edit-modal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Edit Task</h2>
+                <button class="close-modal-btn" id="close-modal-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="edit-form" autocomplete="off">
+                <input type="hidden" id="edit-task-id">
+                <div class="input-group">
+                    <label for="edit-task-input">Task Title</label>
+                    <div class="text-input-wrapper">
+                        <input type="text" id="edit-task-input" required>
+                        <span class="input-focus-line"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group half">
+                        <label for="edit-task-category">Category</label>
+                        <select id="edit-task-category">
+                            <option value="Work">💼 Work</option>
+                            <option value="Personal">🏠 Personal</option>
+                            <option value="Shopping">🛒 Shopping</option>
+                            <option value="Health">❤️ Health</option>
+                            <option value="Others">✨ Others</option>
+                        </select>
+                    </div>
+                    <div class="input-group half">
+                        <label for="edit-task-priority">Priority</label>
+                        <select id="edit-task-priority">
+                            <option value="low">🟢 Low</option>
+                            <option value="medium">🟡 Medium</option>
+                            <option value="high">🔴 High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="edit-task-date">Due Date</label>
+                    <input type="date" id="edit-task-date">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-edit-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confetti canvas for complete-all celebration -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Main JavaScript Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
